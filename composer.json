@@ -1,0 +1,54 @@
+{
+	"name": "skar/laminas-doctrine-orm",
+	"description": "Simple Laminas/Mezzio Doctrine ORM integration",
+	"type": "library",
+	"license": "BSD-3-Clause",
+	"keywords": [
+		"doctrine",
+		"orm",
+		"laminas",
+		"mezzio"
+	],
+	"authors": [
+		{
+			"name": "Skar",
+			"email": "sskarr@gmail.com",
+			"homepage": "http://skar.pw/"
+		}
+	],
+	"minimum-stability": "dev",
+	"require": {
+		"psr/container": "^1.0",
+		"doctrine/orm": "^2.7",
+		"laminas/laminas-cli": "^1.0",
+		"laminas/laminas-servicemanager": "^3.3",
+		"php": "^7.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^7.5 || ^8.5 || ^9.0",
+		"squizlabs/php_codesniffer": "^3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Skar\\LaminasDoctrineORM\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Skar\\LaminasDoctrineORMTest\\": "test/"
+		}
+	},
+	"suggest": {
+		"doctrine/migrations": "doctrine migrations if you want to keep your schema definitions versioned"
+	},
+	"scripts": {
+		"check": [
+			"@cs-check",
+			"@test"
+		],
+		"cs-check": "phpcs",
+		"cs-fix": "phpcbf",
+		"test": "phpunit --colors=always",
+		"test-coverage": "phpunit --coverage-clover build/clover.xml"
+	}
+}

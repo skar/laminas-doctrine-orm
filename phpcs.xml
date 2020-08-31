@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Coding Standard">
+	<description>Coding Standard</description>
+
+	<!-- encoding -->
+	<arg name="encoding" value="utf-8"/>
+
+	<!-- display progress -->
+	<arg value="p"/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php,php.dist"/>
+
+	<!-- Paths to check -->
+	<file>config</file>
+	<file>src</file>
+	<file>test</file>
+
+	<!-- inherit rules from PSR-2 -->
+	<rule ref="PSR2">
+		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration.SpaceAfterFunction"/>
+		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine"/>
+		<exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine"/>
+		<!-- Allow Tabs -->
+		<exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
+	</rule>
+
+	<rule ref="Generic.WhiteSpace.ScopeIndent">
+		<properties>
+			<property name="ignoreIndentationTokens" type="array" value="T_COMMENT,T_DOC_COMMENT_OPEN_TAG"/>
+			<property name="tabIndent" type="bool" value="true"/>
+		</properties>
+	</rule>
+
+	<arg name="tab-width" value="4"/>
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+	<rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+
+	<rule ref="Squiz.WhiteSpace.OperatorSpacing">
+		<properties>
+			<property name="ignoreNewlines" value="true"/>
+		</properties>
+	</rule>
+
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+		<properties>
+			<property name="ignoreBlankLines" value="false"/>
+		</properties>
+	</rule>
+
+	<rule ref="PSR1.Files.SideEffects">
+		<exclude-pattern>public/index.php</exclude-pattern>
+	</rule>
+</ruleset>
