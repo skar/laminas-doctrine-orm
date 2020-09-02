@@ -40,21 +40,18 @@ class DriverFactory extends AbstractFactory {
 			throw new InvalidArgumentException(sprintf('Driver with type "%s" could not be found', $class));
 		}
 
-		// Not all drivers (DriverChain) require paths.
-		$paths = $this->config['paths'];
-
 		// Special options for AnnotationDrivers.
 		if ($class === AnnotationDriver::class || is_subclass_of($class, AnnotationDriver::class)) {
 			$reader = new CachedReader(
 				new IndexedReader(new AnnotationReader()),
-				$this->getServiceName('cache', $this->config['cache'])
+				$container->get($this->getServiceName('cache'))
 			);
-			$driver = new $class($reader, $paths);
+			$driver = new $class($reader, $config['paths']);
 		} else {
-			$driver = new $class($paths);
+			$driver = new $class($config['paths']);
 		}
 
-		if ($this->config['extension'] && $driver instanceof FileDriver) {
+		if ($config['extension'] && $driver instanceof FileDriver) {
 			$locator = $driver->getLocator();
 
 			if (get_class($locator) !== DefaultFileLocator::class) {
@@ -66,12 +63,12 @@ class DriverFactory extends AbstractFactory {
 				));
 			}
 
-			$driver->setLocator(new DefaultFileLocator($locator->getPaths(), $this->config['extension']));
+			$driver->setLocator(new DefaultFileLocator($locator->getPaths(), $config['extension']));
 		}
 
 		// Extra post-create options for DriverChain.
-		if ($driver instanceof MappingDriverChain && $this->config['drivers']) {
-			foreach ($this->config['drivers'] as $namespace => $driverConfig) {
+		if ($driver instanceof MappingDriverChain && $config['drivers']) {
+			foreach ($config['drivers'] as $namespace => $driverConfig) {
 				$driverConfig = ArrayUtils::merge($this->getDefaultConfig(), $driverConfig);
 				$driver->addDriver($this->createDriver($driverConfig, $container), $namespace);
 			}

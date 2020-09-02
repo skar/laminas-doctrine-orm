@@ -7,7 +7,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Stdlib\ArrayUtils;
 
 abstract class AbstractFactory implements FactoryInterface {
-	protected array $config;
+	protected $config;
 
 	/**
 	 * AbstractFactory constructor.
@@ -26,7 +26,7 @@ abstract class AbstractFactory implements FactoryInterface {
 	 *
 	 * @return string
 	 */
-	protected function getServiceName($type, $key = null) {
+	protected function getServiceName(string $type, $key = null) {
 		return sprintf(
 			'doctrine.%s.%s',
 			$type,
