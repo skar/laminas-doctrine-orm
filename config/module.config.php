@@ -28,16 +28,16 @@ return [
 
 	'laminas-cli' => [
 		'commands' => [
-			'doctrine:migration:diff'        => Command\MigrationsDiff::class,
-			'doctrine:migration:dump-schema' => Command\MigrationsDumpSchema::class,
-			'doctrine:migration:execute'     => Command\MigrationsExecute::class,
-			'doctrine:migration:generate'    => Command\MigrationsGenerate::class,
-			'doctrine:migration:latest'      => Command\MigrationsLatest::class,
-			'doctrine:migration:migrate'     => Command\MigrationsMigrate::class,
-			'doctrine:migration:rollup'      => Command\MigrationsRollup::class,
-			'doctrine:migration:status'      => Command\MigrationsStatus::class,
-			'doctrine:migration:up-to-date'  => Command\MigrationsUpToDate::class,
-			'doctrine:migration:version'     => Command\MigrationsVersion::class,
+			'doctrine:migrations:diff'        => Command\MigrationsDiff::class,
+			'doctrine:migrations:dump-schema' => Command\MigrationsDumpSchema::class,
+			'doctrine:migrations:execute'     => Command\MigrationsExecute::class,
+			'doctrine:migrations:generate'    => Command\MigrationsGenerate::class,
+			'doctrine:migrations:latest'      => Command\MigrationsLatest::class,
+			'doctrine:migrations:migrate'     => Command\MigrationsMigrate::class,
+			'doctrine:migrations:rollup'      => Command\MigrationsRollup::class,
+			'doctrine:migrations:status'      => Command\MigrationsStatus::class,
+			'doctrine:migrations:up-to-date'  => Command\MigrationsUpToDate::class,
+			'doctrine:migrations:version'     => Command\MigrationsVersion::class,
 		],
 	],
 
