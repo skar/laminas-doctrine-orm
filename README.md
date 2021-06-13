@@ -2,6 +2,8 @@
 
 Simple Laminas/Mezzio Doctrine ORM integration.
 
+Please feel free to report bugs and missing features.
+
 # Using
 
 ## Configuration
