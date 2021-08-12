@@ -8,7 +8,7 @@ use Skar\LaminasDoctrineORM\Command;
 return [
 	'dependencies' => [
 		'factories' => [
-			ORM\EntityManager::class => Service\EntityManagerFactory::class,
+			ORM\EntityManagerInterface::class => Service\EntityManagerFactory::class,
 
 			Command\MigrationsDiff::class       => Command\MigrationsCommandFactory::class,
 			Command\MigrationsDumpSchema::class => Command\MigrationsCommandFactory::class,

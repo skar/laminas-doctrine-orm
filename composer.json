@@ -16,7 +16,6 @@
 			"homepage": "http://skar.pw/"
 		}
 	],
-	"minimum-stability": "dev",
 	"require": {
 		"psr/container": "~1.0",
 		"doctrine/orm": "~2.7",

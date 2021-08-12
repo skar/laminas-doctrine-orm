@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Skar\LaminasDoctrineORM\Command;
 
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Doctrine\ORM\EntityManager;
 use ErrorException;
 use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,8 +33,8 @@ trait MigrationsCommandTrait {
 	 * @param OutputInterface $output
 	 */
 	public function initialize(InputInterface $input, OutputInterface $output) : void {
-		/** @var $em EntityManager */
-		$em = $this->container->get(EntityManager::class);
+		/** @var $em EntityManagerInterface */
+		$em = $this->container->get(EntityManagerInterface::class);
 		/** @var HelperSet $helperSet */
 		$helperSet = $this->getApplication()->getHelperSet();
 		$helperSet->set(new ConnectionHelper($em->getConnection()), 'connection');

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Skar\LaminasDoctrineORM\Service;
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Interop\Container\ContainerInterface;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
@@ -16,6 +17,10 @@ use Laminas\Stdlib\ArrayUtils;
 use \InvalidArgumentException;
 
 class DriverFactory extends AbstractFactory {
+
+    /** @var bool */
+    private static $isAnnotationLoaderRegistered = false;
+
 	/**
 	 * @inheritDoc
 	 *
@@ -42,6 +47,8 @@ class DriverFactory extends AbstractFactory {
 
 		// Special options for AnnotationDrivers.
 		if ($class === AnnotationDriver::class || is_subclass_of($class, AnnotationDriver::class)) {
+            self::registerAnnotationLoader();
+
 			$reader = new CachedReader(
 				new IndexedReader(new AnnotationReader()),
 				$container->get($this->getServiceName('cache'))
@@ -89,4 +96,20 @@ class DriverFactory extends AbstractFactory {
 			'drivers'   => [],
 		];
 	}
+
+
+    /**
+     * Registers the annotation loader
+     */
+    private function registerAnnotationLoader() : void
+    {
+        if (self::$isAnnotationLoaderRegistered) {
+            return;
+        }
+
+        /** @psalm-suppress DeprecatedMethod */
+        AnnotationRegistry::registerLoader('class_exists');
+
+        self::$isAnnotationLoaderRegistered = true;
+    }
 }
