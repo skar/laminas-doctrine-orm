@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Skar\LaminasDoctrineORM\Service;
 
 use Interop\Container\ContainerInterface;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -40,8 +41,12 @@ class DriverFactory extends AbstractFactory {
 			throw new InvalidArgumentException(sprintf('Driver with type "%s" could not be found', $class));
 		}
 
+		// AttributeDriver extends AnnotationDriver
+		// in violation of the Liskov substitution principle 
+		if ($class === AttributeDriver::class || is_subclass_of($class, AttributeDriver::class)) {
+			$driver = new $class($config['paths']);
 		// Special options for AnnotationDrivers.
-		if ($class === AnnotationDriver::class || is_subclass_of($class, AnnotationDriver::class)) {
+		} elseif ($class === AnnotationDriver::class || is_subclass_of($class, AnnotationDriver::class)) {
 			$reader = new CachedReader(
 				new IndexedReader(new AnnotationReader()),
 				$container->get($this->getServiceName('cache'))
