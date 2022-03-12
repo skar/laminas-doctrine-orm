@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Skar\LaminasDoctrineORM\Service;
 
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
@@ -22,7 +23,18 @@ class ConfigurationFactory extends AbstractFactory {
 	 * @throws DBALException
 	 * @throws \Doctrine\ORM\ORMException
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null) {
+	/**
+	 * @param ContainerInterface $container
+	 * @param $requestedName
+	 * @param array|null $options
+	 *
+	 * @return Configuration
+	 * @throws \Doctrine\DBAL\Exception
+	 * @throws \Doctrine\ORM\Exception\InvalidEntityRepository
+	 * @throws \Psr\Container\ContainerExceptionInterface
+	 * @throws \Psr\Container\NotFoundExceptionInterface
+	 */
+	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): Configuration {
 		$configuration = new Configuration();
 
 		$configuration->setAutoGenerateProxyClasses($this->config['generate_proxies']);
@@ -53,16 +65,16 @@ class ConfigurationFactory extends AbstractFactory {
 			$configuration->addFilter($name, $class);
 		}
 
-		$configuration->setMetadataCacheImpl($container->get(
+		$configuration->setMetadataCache($container->get(
 			$this->getServiceName('cache', $this->config['metadata_cache'])
 		));
-		$configuration->setQueryCacheImpl($container->get(
+		$configuration->setQueryCache($container->get(
 			$this->getServiceName('cache', $this->config['query_cache'])
 		));
-		$configuration->setResultCacheImpl($container->get(
+		$configuration->setResultCacheImpl(DoctrineProvider::wrap($container->get(
 			$this->getServiceName('cache', $this->config['result_cache'])
-		));
-		$configuration->setHydrationCacheImpl($container->get(
+		)));
+		$configuration->setHydrationCache($container->get(
 			$this->getServiceName('cache', $this->config['hydration_cache'])
 		));
 

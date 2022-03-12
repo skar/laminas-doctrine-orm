@@ -2,24 +2,31 @@
 declare(strict_types=1);
 
 use Doctrine\ORM;
+use Doctrine\Migrations\Tools\Console\Command as DoctrineCommand;
+use Interop\Container\ContainerInterface;
 use Skar\LaminasDoctrineORM\Service;
 use Skar\LaminasDoctrineORM\Command;
+use Skar\Cache;
 
 return [
 	'dependencies' => [
 		'factories' => [
+			'doctrine.cache.array' => function(ContainerInterface $container) {
+				return new Cache\Cache(new Cache\Storage\Adapter\Memory());
+			},
+
 			ORM\EntityManager::class => Service\EntityManagerFactory::class,
 
-			Command\MigrationsDiff::class       => Command\MigrationsCommandFactory::class,
-			Command\MigrationsDumpSchema::class => Command\MigrationsCommandFactory::class,
-			Command\MigrationsExecute::class    => Command\MigrationsCommandFactory::class,
-			Command\MigrationsGenerate::class   => Command\MigrationsCommandFactory::class,
-			Command\MigrationsLatest::class     => Command\MigrationsCommandFactory::class,
-			Command\MigrationsMigrate::class    => Command\MigrationsCommandFactory::class,
-			Command\MigrationsRollup::class     => Command\MigrationsCommandFactory::class,
-			Command\MigrationsStatus::class     => Command\MigrationsCommandFactory::class,
-			Command\MigrationsUpToDate::class   => Command\MigrationsCommandFactory::class,
-			Command\MigrationsVersion::class    => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\DiffCommand::class       => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\DumpSchemaCommand::class => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\ExecuteCommand::class    => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\GenerateCommand::class   => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\LatestCommand::class     => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\MigrateCommand::class    => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\RollupCommand::class     => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\StatusCommand::class     => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\UpToDateCommand::class   => Command\MigrationsCommandFactory::class,
+			DoctrineCommand\VersionCommand::class    => Command\MigrationsCommandFactory::class,
 		],
 		'abstract_factories' => [
 			Service\ServiceAbstractFactory::class,
@@ -28,16 +35,16 @@ return [
 
 	'laminas-cli' => [
 		'commands' => [
-			'doctrine:migrations:diff'        => Command\MigrationsDiff::class,
-			'doctrine:migrations:dump-schema' => Command\MigrationsDumpSchema::class,
-			'doctrine:migrations:execute'     => Command\MigrationsExecute::class,
-			'doctrine:migrations:generate'    => Command\MigrationsGenerate::class,
-			'doctrine:migrations:latest'      => Command\MigrationsLatest::class,
-			'doctrine:migrations:migrate'     => Command\MigrationsMigrate::class,
-			'doctrine:migrations:rollup'      => Command\MigrationsRollup::class,
-			'doctrine:migrations:status'      => Command\MigrationsStatus::class,
-			'doctrine:migrations:up-to-date'  => Command\MigrationsUpToDate::class,
-			'doctrine:migrations:version'     => Command\MigrationsVersion::class,
+			'doctrine:migrations:diff'        => DoctrineCommand\DiffCommand::class,
+			'doctrine:migrations:dump-schema' => DoctrineCommand\DumpSchemaCommand::class,
+			'doctrine:migrations:execute'     => DoctrineCommand\ExecuteCommand::class,
+			'doctrine:migrations:generate'    => DoctrineCommand\GenerateCommand::class,
+			'doctrine:migrations:latest'      => DoctrineCommand\LatestCommand::class,
+			'doctrine:migrations:migrate'     => DoctrineCommand\MigrateCommand::class,
+			'doctrine:migrations:rollup'      => DoctrineCommand\RollupCommand::class,
+			'doctrine:migrations:status'      => DoctrineCommand\StatusCommand::class,
+			'doctrine:migrations:up-to-date'  => DoctrineCommand\UpToDateCommand::class,
+			'doctrine:migrations:version'     => DoctrineCommand\VersionCommand::class,
 		],
 	],
 
@@ -46,17 +53,25 @@ return [
 		'connection'     => Service\ConnectionFactory::class,
 		'configuration'  => Service\ConfigurationFactory::class,
 		'driver'         => Service\DriverFactory::class,
-		'cache'          => Service\CacheFactory::class,
 		'event_manager'  => Service\EventManagerFactory::class,
 	],
 
 	'doctrine' => [
 		'migrations' => [
-			'name'      => 'Doctrine Database Migrations',
-			'namespace' => 'Skar\LaminasDoctrineORM',
-			'directory' => 'data/migrations',
-			'table'     => 'migrations',
-			'column'    => 'version',
+			'orm_default' => [
+				'table_storage' => [
+					'table_name'                 => 'migrations_executed',
+					'version_column_name'        => 'version',
+					'version_column_length'      => 255,
+					'executed_at_column_name'    => 'executed_at',
+					'execution_time_column_name' => 'execution_time',
+				],
+				'migrations_paths' => [
+					'Skar\LaminasDoctrineORM' => 'data/migrations',
+				],
+				'all_or_nothing'          => true,
+				'check_database_platform' => true,
+			],
 		],
 	],
 ];

@@ -14,7 +14,7 @@ abstract class AbstractFactory implements FactoryInterface {
 	 *
 	 * @param array $config
 	 */
-	public function __construct($config = []) {
+	public function __construct(array $config = []) {
 		$this->config = ArrayUtils::merge($this->getDefaultConfig(), $config);
 	}
 
@@ -26,7 +26,7 @@ abstract class AbstractFactory implements FactoryInterface {
 	 *
 	 * @return string
 	 */
-	protected function getServiceName(string $type, $key = null) {
+	protected function getServiceName(string $type, ?string $key = null): string {
 		return sprintf(
 			'doctrine.%s.%s',
 			$type,

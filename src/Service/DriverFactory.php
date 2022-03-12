@@ -10,7 +10,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\DefaultFileLocator;
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Laminas\Stdlib\ArrayUtils;
@@ -41,13 +41,12 @@ class DriverFactory extends AbstractFactory {
 			throw new InvalidArgumentException(sprintf('Driver with type "%s" could not be found', $class));
 		}
 
-		// AttributeDriver extends AnnotationDriver
-		// in violation of the Liskov substitution principle 
 		if ($class === AttributeDriver::class || is_subclass_of($class, AttributeDriver::class)) {
+			// AttributeDriver extends AnnotationDriver in violation of the Liskov substitution principle
 			$driver = new $class($config['paths']);
-		// Special options for AnnotationDrivers.
 		} elseif ($class === AnnotationDriver::class || is_subclass_of($class, AnnotationDriver::class)) {
-			$reader = new CachedReader(
+			// Special options for AnnotationDrivers.
+			$reader = new PsrCachedReader(
 				new IndexedReader(new AnnotationReader()),
 				$container->get($this->getServiceName('cache'))
 			);
