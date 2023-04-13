@@ -13,19 +13,19 @@ Create config file `config/autoload/doctrine.global.php` with minimal config:
 * `doctrine` - Key for doctrine config
     * `connection`
         * `orm_default`
-            * `driver_class` - Full name of `\Doctrine\DBAL\Driver` implementation
-            * `params` - Driver parameters
+            * `driver_class` - The full name of `\Doctrine\DBAL\Driver` implementation
+            * `params` - The connection driver [parameters](https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/configuration.html)
     * `driver` - Mapping driver configuration
         * `orm_default`
             * `drivers`
                 * Key must be a namespace for entities (e.g. `App\Entity`)
-                    * `class` - Full name of `MappingDriver`
-                    * `paths` - Array of directories with entities
+                    * `class` - The full name of [the metadata driver](https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/metadata-drivers.html#metadata-drivers)
+                    * `paths` - An array of directories containing your [entities](https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/basic-mapping.html#basic-mapping)
                 
-See [Doctrine documentation](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.7/reference/configuration.html)
+See [the Doctrine documentation](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.7/reference/configuration.html)
 for more possible configurations. 
 
-### Example
+### Example Configuration
 ```php
 <?php
 declare(strict_types=1);
