@@ -5,7 +5,7 @@ namespace Skar\LaminasDoctrineORM\Service;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class EntityManagerFactory extends AbstractFactory {
 	/**
@@ -15,10 +15,11 @@ class EntityManagerFactory extends AbstractFactory {
 	 *
 	 * @throws ORMException
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null) {
-		return EntityManager::create(
+	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): EntityManager {
+		return new EntityManager(
 			$container->get($this->getServiceName('connection')),
-			$container->get($this->getServiceName('configuration'))
+			$container->get($this->getServiceName('configuration')),
+			$container->get($this->getServiceName('event_manager'))
 		);
 	}
 
@@ -29,6 +30,7 @@ class EntityManagerFactory extends AbstractFactory {
 		return [
 			'connection'    => 'orm_default',
 			'configuration' => 'orm_default',
+			'event_manager' => 'orm_default',
 		];
 	}
 }

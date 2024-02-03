@@ -7,7 +7,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Stdlib\ArrayUtils;
 
 abstract class AbstractFactory implements FactoryInterface {
-	protected $config;
+	protected array $config;
 
 	/**
 	 * AbstractFactory constructor.

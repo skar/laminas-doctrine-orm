@@ -13,7 +13,7 @@ class ServiceAbstractFactory implements AbstractFactoryInterface {
 	 * @inheritDoc
 	 */
 	public function canCreate(ContainerInterface $container, $requestedName) {
-		return strpos($requestedName, 'doctrine.') === 0;
+		return str_starts_with($requestedName, 'doctrine.');
 	}
 
 	/**
@@ -45,15 +45,18 @@ class ServiceAbstractFactory implements AbstractFactoryInterface {
 		}
 
 		if (!is_subclass_of($factories[$serviceName], AbstractFactory::class)) {
-			throw new ServiceNotCreatedException(
-				sprintf('"%s" must be inherit from "%s"', $factories[$serviceName], AbstractFactory::class)
-			);
+			throw new ServiceNotCreatedException(vsprintf('"%s" must be inherit from "%s"', [
+				$factories[$serviceName],
+				AbstractFactory::class,
+			]));
 		}
 
 		$factory = new $factories[$serviceName]($serviceConfig);
 
 		if (!is_callable($factory)) {
-			throw new ServiceNotCreatedException(sprintf('%s must be callable', $factories[$serviceName]));
+			throw new ServiceNotCreatedException(vsprintf('"%s" must be callable', [
+				$factories[$serviceName],
+			]));
 		}
 
 		return $factory($container, $requestedName, $options);

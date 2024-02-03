@@ -3,41 +3,35 @@ declare(strict_types=1);
 
 namespace Skar\LaminasDoctrineORM\Service;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\RegionsConfiguration;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Interop\Container\ContainerInterface;
-use \InvalidArgumentException;
+use Psr\Container;
+use InvalidArgumentException;
 
 class ConfigurationFactory extends AbstractFactory {
 	/**
-	 * @inheritDoc
-	 *
-	 * @return Configuration
-	 *
-	 * @throws DBALException
-	 * @throws \Doctrine\ORM\ORMException
-	 */
-	/**
-	 * @param ContainerInterface $container
-	 * @param $requestedName
+	 * @param Container\ContainerInterface $container
+	 * @param string $requestedName
 	 * @param array|null $options
 	 *
 	 * @return Configuration
-	 * @throws \Doctrine\DBAL\Exception
-	 * @throws \Doctrine\ORM\Exception\InvalidEntityRepository
-	 * @throws \Psr\Container\ContainerExceptionInterface
-	 * @throws \Psr\Container\NotFoundExceptionInterface
+	 *
+	 * @throws DBAL\Exception
+	 * @throws InvalidEntityRepository
+	 * @throws Container\ContainerExceptionInterface
+	 * @throws Container\NotFoundExceptionInterface
 	 */
 	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): Configuration {
 		$configuration = new Configuration();
 
-		$configuration->setAutoGenerateProxyClasses($this->config['generate_proxies']);
+		$configuration->setAutoGenerateProxyClasses($this->config['auto_generate_proxy_classes']);
 		$configuration->setProxyDir($this->config['proxy_dir']);
 		$configuration->setProxyNamespace($this->config['proxy_namespace']);
 
@@ -47,7 +41,9 @@ class ConfigurationFactory extends AbstractFactory {
 		$configuration->setCustomStringFunctions($this->config['string_functions']);
 		$configuration->setCustomNumericFunctions($this->config['numeric_functions']);
 
-		$configuration->setClassMetadataFactoryName($this->config['class_metadata_factory_name']);
+		if ($this->config['class_metadata_factory_name']) {
+			$configuration->setClassMetadataFactoryName($this->config['class_metadata_factory_name']);
+		}
 
 		foreach ($this->config['named_queries'] as $name => $query) {
 			$configuration->addNamedQuery($name, $query);
@@ -71,9 +67,9 @@ class ConfigurationFactory extends AbstractFactory {
 		$configuration->setQueryCache($container->get(
 			$this->getServiceName('cache', $this->config['query_cache'])
 		));
-		$configuration->setResultCacheImpl(DoctrineProvider::wrap($container->get(
+		$configuration->setResultCache($container->get(
 			$this->getServiceName('cache', $this->config['result_cache'])
-		)));
+		));
 		$configuration->setHydrationCache($container->get(
 			$this->getServiceName('cache', $this->config['hydration_cache'])
 		));
@@ -94,7 +90,7 @@ class ConfigurationFactory extends AbstractFactory {
 
 		if ($quoteStrategy = $this->config['quote_strategy']) {
 			if (is_string($quoteStrategy)) {
-				if (! $container->has($quoteStrategy)) {
+				if (!$container->has($quoteStrategy)) {
 					throw new InvalidArgumentException(sprintf('Quote strategy "%s" not found', $quoteStrategy));
 				}
 
@@ -106,7 +102,7 @@ class ConfigurationFactory extends AbstractFactory {
 
 		if ($repositoryFactory = $this->config['repository_factory']) {
 			if (is_string($repositoryFactory)) {
-				if (! $container->has($repositoryFactory)) {
+				if (!$container->has($repositoryFactory)) {
 					throw new InvalidArgumentException(sprintf('Repository factory "%s" not found', $repositoryFactory));
 				}
 
@@ -140,7 +136,7 @@ class ConfigurationFactory extends AbstractFactory {
 				}
 			}
 
-			$cacheFactory = new DefaultCacheFactory($regionsConfig, $configuration->getResultCacheImpl());
+			$cacheFactory = new DefaultCacheFactory($regionsConfig, $configuration->getResultCache());
 			$cacheFactory->setFileLockRegionDirectory($this->config['second_level_cache']['file_lock_region_directory']);
 
 			$cacheConfiguration = new CacheConfiguration();
@@ -151,8 +147,8 @@ class ConfigurationFactory extends AbstractFactory {
 			$configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
 		}
 
-		if ($filterSchemaAssetsExpression = $this->config['filter_schema_assets_expression']) {
-			$configuration->setFilterSchemaAssetsExpression($filterSchemaAssetsExpression);
+		if ($schemaAssetsFilter = $this->config['schema_assets_filter']) {
+			$configuration->setSchemaAssetsFilter($schemaAssetsFilter);
 		}
 
 		if ($className = $this->config['default_repository_class_name']) {
@@ -173,6 +169,15 @@ class ConfigurationFactory extends AbstractFactory {
 			}
 		}
 
+		if ($this->config['middlewares'] !== []) {
+			$middlewares = [];
+			foreach ($this->config['middlewares'] as $middleware) {
+				$middlewares[] = $container->get($middleware);
+			}
+
+			$configuration->setMiddlewares($middlewares);
+		}
+
 		return $configuration;
 	}
 
@@ -186,7 +191,7 @@ class ConfigurationFactory extends AbstractFactory {
 			'result_cache'                    => 'array',
 			'hydration_cache'                 => 'array',
 			'driver'                          => 'orm_default',
-			'generate_proxies'                => true,
+			'auto_generate_proxy_classes'     => true,
 			'proxy_dir'                       => 'data/cache/DoctrineORM/Proxy',
 			'proxy_namespace'                 => 'DoctrineORM\Proxy',
 			'entity_namespaces'               => [],
@@ -197,7 +202,6 @@ class ConfigurationFactory extends AbstractFactory {
 			'named_queries'                   => [],
 			'named_native_queries'            => [],
 			'custom_hydration_modes'          => [],
-			'types'                           => [],
 			'naming_strategy'                 => null,
 			'quote_strategy'                  => null,
 			'default_repository_class_name'   => null,
@@ -205,6 +209,7 @@ class ConfigurationFactory extends AbstractFactory {
 			'class_metadata_factory_name'     => null,
 			'entity_listener_resolver'        => null,
 			'sql_logger'                      => null,
+			'middlewares'                     => [],
 			'second_level_cache'              => [
 				'enabled'                    => false,
 				'default_lifetime'           => 3600,
@@ -212,7 +217,6 @@ class ConfigurationFactory extends AbstractFactory {
 				'file_lock_region_directory' => 'data/cache/DoctrineORM',
 				'regions'                    => [],
 			],
-			'filter_schema_assets_expression' => null,
 		];
 	}
 }
