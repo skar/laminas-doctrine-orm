@@ -202,6 +202,7 @@ class ConfigurationFactory extends AbstractFactory {
 			'named_queries'                   => [],
 			'named_native_queries'            => [],
 			'custom_hydration_modes'          => [],
+			'types'                           => [],
 			'naming_strategy'                 => null,
 			'quote_strategy'                  => null,
 			'default_repository_class_name'   => null,
@@ -209,6 +210,7 @@ class ConfigurationFactory extends AbstractFactory {
 			'class_metadata_factory_name'     => null,
 			'entity_listener_resolver'        => null,
 			'sql_logger'                      => null,
+			'schema_assets_filter'            => null,
 			'middlewares'                     => [],
 			'second_level_cache'              => [
 				'enabled'                    => false,
