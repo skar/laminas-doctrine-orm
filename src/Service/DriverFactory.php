@@ -22,7 +22,7 @@ class DriverFactory extends AbstractFactory {
 	 *
 	 * @return MappingDriver
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): MappingDriver {
+	public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): MappingDriver {
 		return $this->createDriver($this->config, $container);
 	}
 

@@ -15,7 +15,7 @@ class EntityManagerFactory extends AbstractFactory {
 	 *
 	 * @throws ORMException
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): EntityManager {
+	public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): EntityManager {
 		return new EntityManager(
 			$container->get($this->getServiceName('connection')),
 			$container->get($this->getServiceName('configuration')),

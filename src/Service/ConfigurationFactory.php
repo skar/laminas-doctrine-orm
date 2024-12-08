@@ -28,7 +28,7 @@ class ConfigurationFactory extends AbstractFactory {
 	 * @throws Container\ContainerExceptionInterface
 	 * @throws Container\NotFoundExceptionInterface
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): Configuration {
+	public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): Configuration {
 		$configuration = new Configuration();
 
 		$configuration->setAutoGenerateProxyClasses($this->config['auto_generate_proxy_classes']);
