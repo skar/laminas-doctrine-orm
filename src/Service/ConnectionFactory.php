@@ -14,7 +14,7 @@ class ConnectionFactory extends AbstractFactory {
 	 *
 	 * @throws DBAL\Exception
 	 */
-	public function __invoke(ContainerInterface $container, $requestedName, array $options = null): DBAL\Connection {
+	public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): DBAL\Connection {
 		$params = [
 			'driverClass'  => $this->config['driver_class'],
 			'wrapperClass' => $this->config['wrapper_class'],
