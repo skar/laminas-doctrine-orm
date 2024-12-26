@@ -17,14 +17,14 @@ class EventManagerFactory extends AbstractFactory {
 		$eventManager = new EventManager();
 
 		foreach ($this->config['subscribers'] as $subscriber) {
-			if ($container->has($subscriber)) {
+			if (!$container->has($subscriber)) {
 				throw new InvalidArgumentException(sprintf('Subscriber "%s" not found', $subscriber));
 			}
 			$eventManager->addEventSubscriber($container->get($subscriber));
 		}
 
 		foreach ($this->config['listeners'] as $listener) {
-			if ($container->has($listener['listener'])) {
+			if (!$container->has($listener['listener'])) {
 				throw new InvalidArgumentException(sprintf('Listeners "%s" not found', $listener));
 			}
 			$eventManager->addEventListener($listener['events'], $container->get($listener['listener']));
